@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "zwo-efw"
+version = "0.1.0"
+description = "Python library for interacting with a ZWO EFW filter wheel over USB"
+authors = ["Blake Mitchell <bmitc@mit.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
