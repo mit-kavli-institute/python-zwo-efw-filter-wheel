@@ -1,0 +1,8 @@
+# Treat these files as binary so that Git makes no attempt to modify line endings
+*.pdf binary
+*.dll binary
+*.a binary
+*.so binary
+*.dylib binary
+zwo_efw/efw_sdk/EFW_SDK/EFW_linux_mac_SDK_V1.7/lib/** binary
+zwo_efw/efw_sdk/EFW_SDK/EFW_Windows_SDK_V1.7/EFW\ SDK/lib/** binary
