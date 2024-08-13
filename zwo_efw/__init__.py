@@ -1,8 +1,35 @@
 # Core dependencies
+from ctypes import Structure
 import time
+from typing import NamedTuple
 
 # Project dependencies
 from zwo_efw.wrapper import EFWWrapper
+
+
+############################################################
+#### Data types ############################################
+############################################################
+
+
+class EFWInformation(NamedTuple):
+    """Represents the general information of the filter wheel. This is the information
+    returned by the `EFWGetProperty` SDK function.
+    """
+
+    ID: int
+    """The ID of the filter wheel as returned by the EFW SDK library. Note that the ID does not
+    always match up to an index with respect to the number of filter wheels. It is simply a
+    unique number to an EFW filter wheel.
+    """
+
+    Name: str
+    """Some name assigned to the filter wheel, which appears to correspond to the model of the
+    filter wheel. It isn't clear if this name can be set by a user.
+    """
+
+    NumberOfSlots: int
+    """The number of filter slots in the filter wheel"""
 
 
 class EFW:
@@ -28,12 +55,20 @@ class EFW:
         for filter_wheel_id in filter_wheel_ids:
             self.__efw_wrapper.open_filter_wheel(filter_wheel_id)
 
-        filter_wheel_informations = [
+        filter_wheel_information_structs: list[Structure] = [
             self.__efw_wrapper.get_filter_wheel_information(filter_wheel_id)
             for filter_wheel_id in filter_wheel_ids
         ]
 
-        print(filter_wheel_informations)
+        # Convert the structs to a pure Python data type
+        filter_wheel_information_named_tuples: list[EFWInformation] = [
+            EFWInformation(
+                ID=int(info.ID),
+                Name=bytes(info.Name).decode(),
+                NumberOfSlots=int(info.slotNum),
+            )
+            for info in filter_wheel_information_structs
+        ]
 
     def close(self) -> None:
         number_of_connected_filter_wheels = (

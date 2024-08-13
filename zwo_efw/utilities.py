@@ -27,7 +27,7 @@ def get_platform_bitness():
         return Bitness.BITS_32
 
 
-def get_platform():
+def get_operating_system():
     """Gets the operating system platform of the current system"""
     match platform.system():
         case "Windows":
