@@ -2,7 +2,6 @@
 from ctypes import *
 from enum import IntEnum, auto, verify, UNIQUE
 from pathlib import Path
-import platform
 
 # Project dependencies
 from zwo_efw.utilities import (
