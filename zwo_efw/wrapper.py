@@ -1,5 +1,5 @@
 # Core dependencies
-from ctypes import *
+from ctypes import c_int, pointer
 
 # Project dependencies
 from zwo_efw.bindings import load_zwo_efw_library, EFW_ERROR_CODE, EFW_INFO

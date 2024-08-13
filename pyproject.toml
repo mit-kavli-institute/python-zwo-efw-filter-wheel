@@ -6,11 +6,27 @@ authors = ["Blake Mitchell <bmitc@mit.edu>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = ">=3.12"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
+ruff = "^0.5.7"
+poethepoet = "^0.27.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+ignore = [
+    "E712", # Prefer explicitness over implicitness
+]
+
+[tool.poe.tasks]
+all = ["format", "lint"]
+format = "poetry run ruff format ./zwo_efw ./tests"
+check-formatting = "poetry run ruff format --check ./zwo_efw ./tests"
+lint = "poetry run ruff check ./zwo_efw ./tests"

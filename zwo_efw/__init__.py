@@ -41,6 +41,14 @@ class EFW:
 
     def __init__(self) -> None:
         self.__efw_wrapper = EFWWrapper()
+        self.__filter_wheel_information: list[EFWInformation] = []
+
+    @property
+    def filter_wheel_information(self) -> list[EFWInformation]:
+        """A list of all the filter wheels' information for filter wheels that were identified when
+        the `initialize` method was called.
+        """
+        return self.__filter_wheel_information
 
     def initialize(self) -> None:
         number_of_connected_filter_wheels = (
@@ -61,7 +69,7 @@ class EFW:
         ]
 
         # Convert the structs to a pure Python data type
-        filter_wheel_information_named_tuples: list[EFWInformation] = [
+        self.__filter_wheel_information = [
             EFWInformation(
                 ID=int(info.ID),
                 Name=bytes(info.Name).decode(),
@@ -126,4 +134,4 @@ class EFW:
                 time.sleep(0.100)
 
     def is_moving(self, filter_wheel_id: int) -> bool:
-        return self.get_position(filter_wheel_id) == None
+        return self.get_position(filter_wheel_id) is None

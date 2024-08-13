@@ -1,5 +1,16 @@
 # Core dependencies
-from ctypes import *
+from ctypes import (
+    c_int,
+    POINTER,
+    c_char,
+    c_char_p,
+    c_bool,
+    c_ubyte,
+    cdll,
+    CDLL,
+    Structure,
+    RTLD_GLOBAL,
+)
 from enum import IntEnum, auto, verify, UNIQUE
 from pathlib import Path
 

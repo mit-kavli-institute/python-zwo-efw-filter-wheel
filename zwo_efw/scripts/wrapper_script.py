@@ -7,9 +7,7 @@ from zwo_efw.wrapper import EFWWrapper
 
 efw = EFWWrapper()
 
-print(
-    f"Number of connected filter wheels: {efw.get_number_of_connected_filter_wheels()}"
-)
+print(f"Number of connected filter wheels: {efw.get_number_of_connected_filter_wheels()}")
 
 print(f"Filter wheel ID for index 0: {efw.get_filter_wheel_id(0)}")
 
