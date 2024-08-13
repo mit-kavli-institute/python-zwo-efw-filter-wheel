@@ -4,7 +4,12 @@ from enum import IntEnum, auto, verify, UNIQUE
 from pathlib import Path
 
 # Project dependencies
-from zwo_efw.utilities import Bitness, Platform, get_platform_bitness, get_platform
+from zwo_efw.utilities import (
+    Bitness,
+    Platform,
+    get_platform_bitness,
+    get_operating_system,
+)
 
 
 ############################################################
@@ -27,7 +32,7 @@ def _get_library_path() -> str:
 
     base_sdk_path = Path(__file__).resolve().parent / "efw_sdk" / "EFW_SDK"
 
-    platform = get_platform()
+    platform = get_operating_system()
     bitness = get_platform_bitness()
 
     match platform:
@@ -69,6 +74,9 @@ def _get_library_path() -> str:
 ############################################################
 #### Data types ############################################
 ############################################################
+
+
+# These data types map to data types found in the `EFW_filter.h` header file
 
 
 class EFW_INFO(Structure):
@@ -136,18 +144,49 @@ class EFW_SN(Structure):
 ############################################################
 
 
-def load_zwo_efw_library() -> CDLL:
+def load_zwo_efw_library() -> tuple[CDLL, list[CDLL]]:
     """Loads the ZWO EFW filter wheel library and returns the library object. The library object
     can then be used to call into the library's exported functions. Care needs to be taken to
     ensure that the data is marshalled back and forth between Python and the C library correctly.
+
+    The return value is a tuple. The first element is the actual ZWO EFW SDK library. The second
+    element is a list of library dependencies that should simply be kept in a reference so as
+    to keep them in memory.
     """
+
+    efw_sdk_library_path = _get_library_path()
+
+    # Used to keep references to other required loaded libraries around. It is unclear if this is
+    # always needed, but it is done as a precaution to make sure the required libraries are not
+    # unloaded by being garbage collected. The tracking of other libraries is needed because on
+    # some operating systems, the ZWO EFW SDK library depends upon system libraries.
+    library_dependencies = []
+
+    # Load all dependent libraries prior to loading the EFW SDK library
+    match get_operating_system():
+        case Platform.LINUX:
+            # The ZWO EFW SDK library on Linux depends on the Linux `libudev` library, so we need
+            # to load it first. If we don't, then the error `undefined symbol: udev_enumerate_new`
+            # will be generated.
+            #
+            # The library should be installed via `sudo apt-get install libudev-dev` on Ubuntu.
+            # Load libudev into the Python process and make its symbols visible.
+            #
+            # For more information, see:
+            #  * https://docs.python.org/3/library/ctypes.html#loading-shared-libraries
+            #  * https://manpages.debian.org/bookworm/manpages-dev/dlopen.3.en.html#RTLD_GLOBAL
+            libudev = CDLL("libudev.so", mode=RTLD_GLOBAL)
+
+            # Add the reference to the other libraries list
+            library_dependencies.append(libudev)
+
+    cdll.LoadLibrary(name=efw_sdk_library_path)
+
+    efw_sdk_library = CDLL(name=efw_sdk_library_path)
 
     # Note: View the `EFW_filter.h` header file for the source of this information. See the `ctypes`
     # Python documentation for more information on how to declare types and how to convert data
     # types. https://docs.python.org/3/library/ctypes.html
-
-    cdll.LoadLibrary(name=_get_library_path())
-    efw_sdk_library = CDLL(name="EFW_filter.dll")
 
     # Suggested call order by ZWO:
     # --> EFWGetNum
@@ -445,4 +484,6 @@ def load_zwo_efw_library() -> CDLL:
     efw_sdk_library.EFWSetID.restype = EFW_ERROR_CODE
     efw_sdk_library.EFWSetID.argtypes = [c_int, EFW_ID]
 
-    return efw_sdk_library
+    # Return the EFW SDK library and then any other libraries required so that their
+    # references can be kept.
+    return (efw_sdk_library, library_dependencies)

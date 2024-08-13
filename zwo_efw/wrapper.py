@@ -55,7 +55,11 @@ class EFWWrapper:
     """
 
     def __init__(self):
-        self.__efw_library = load_zwo_efw_library()
+        self.__efw_library, self.__library_dependencies = load_zwo_efw_library()
+
+        # Note: The wrapper currently does not implement a close method that will unload the
+        # libraries. This is not a trivial or even easy problem to solve in a cross-platform
+        # manner, as `ctypes` does not provide a built-in function for this.
 
     def get_number_of_connected_filter_wheels(self) -> int:
         """Gets the number of connected filter wheels. This should always be the first thing called
