@@ -32,6 +32,11 @@ class EFWInformation(NamedTuple):
     """The number of filter slots in the filter wheel"""
 
 
+############################################################
+#### Main EFW interface ####################################
+############################################################
+
+
 class EFW:
     """Top-level class for interacting with ZWO EFW filter wheels. This class provides the highest
     level of interaction, so it should be used in almost all cases. The class wraps the official
@@ -91,8 +96,8 @@ class EFW:
         for filter_wheel_id in filter_wheel_ids:
             self.__efw_wrapper.close_filter_wheel(filter_wheel_id)
 
-    def get_position(self, filter_wheel_id: int) -> int | None:
-        """Gets the position of the requested filter wheel. If the position returned is `None`,
+    def get_current_slot(self, filter_wheel_id: int) -> int | None:
+        """Gets the current slot of the requested filter wheel. If the position returned is `None`,
         then the filter wheel is currently moving. (Note that in such cases, the `is_moving` method
         will return `True`.) Once the filter wheel has reached a set position, the position will be
         returned as a 1-indexed integer corresponding to one of the filter slot numbers labeled on
@@ -107,31 +112,59 @@ class EFW:
             # are 0-indexed. So here, we convert from position index to slow by adding 1.
             return position_index + 1
 
-    def set_position(
+    def move(
         self,
         filter_wheel_id: int,
         slot: int,
         wait_until_done: bool = False,
         timeout_seconds: int = 10,
     ) -> None:
-        """Sets the position of the requested filter wheel. The slot should be a 1-indexed integer
-        corresponding to the labels on the physical filter wheel itself.
+        """Moves the filter wheel to the requested slot. The slot should be a 1-indexed integer
+        corresponding to the labels on the physical filter wheel itself. If the slot is not within
+        the range of [1, total number of slots], then the command is silently ignored.
         """
-        # Note: The filter wheel slots are 1-indexed, while the underlying library positions
-        # are 0-indexed. So here, we convert from slot to position index by subtracting 1.
-        self.__efw_wrapper.set_position(filter_wheel_id, slot - 1)
+        number_of_slots_available_for_filter_wheel = (
+            self.__get_filter_wheel_information_by_id(filter_wheel_id).NumberOfSlots
+        )
 
-        if wait_until_done:
-            start_time = time.monotonic()
-            while self.is_moving(filter_wheel_id) == True:
-                if time.monotonic() - start_time > timeout_seconds:
-                    raise TimeoutError(
-                        "ZWO EFW filter wheel ID {filter_wheel_id} did not reach slot {slot} "
-                        f"within the requested timeout period of {timeout_seconds} seconds."
-                    )
+        if slot in range(1, number_of_slots_available_for_filter_wheel + 1):
+            # Note: The filter wheel slots are 1-indexed, while the underlying library positions
+            # are 0-indexed. So here, we convert from slot to position index by subtracting 1.
+            self.__efw_wrapper.set_position(filter_wheel_id, slot - 1)
 
-                # Sleep to yield to other threads
-                time.sleep(0.100)
+            if wait_until_done:
+                start_time = time.monotonic()
+                while self.is_moving(filter_wheel_id) == True:
+                    if time.monotonic() - start_time > timeout_seconds:
+                        raise TimeoutError(
+                            "ZWO EFW filter wheel ID {filter_wheel_id} did not reach slot {slot} "
+                            f"within the requested timeout period of {timeout_seconds} seconds."
+                        )
+
+                    # Sleep to yield to other threads
+                    time.sleep(0.100)
+
+        else:
+            # The slot number is either too small or too big for this filter wheel, so silently
+            # ignore the move command
+            pass
 
     def is_moving(self, filter_wheel_id: int) -> bool:
-        return self.get_position(filter_wheel_id) is None
+        return self.get_current_slot(filter_wheel_id) is None
+
+    ############################################################
+    #### Private methods #######################################
+    ############################################################
+
+    def __get_filter_wheel_information_by_id(
+        self, filter_wheel_id: int
+    ) -> EFWInformation:
+        """Gets the filter wheel information `NamedTuple` for the given filter wheel ID"""
+        # Note: The `self.filter_wheel_information` list could be changed to be a dictionary,
+        # but for now, it's being left as a list since users likely won't need to index the
+        # collection by ID, although this is useful internally.
+        return next(
+            filter_wheel_info
+            for filter_wheel_info in self.filter_wheel_information
+            if filter_wheel_info.ID == filter_wheel_id
+        )
