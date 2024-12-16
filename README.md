@@ -45,6 +45,8 @@ finally:
     efw.close()
 ```
 
+You can also run a poetry script via `poetry run move --id <id> --slot <slot>` to test out and use the library.
+
 ## Dependencies
 
 ### Windows
