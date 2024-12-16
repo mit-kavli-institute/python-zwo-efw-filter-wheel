@@ -55,3 +55,6 @@ def debug_efw_sdk_library_loading() -> None:
         ****************************************************
         """
     )
+
+if __name__ == "__main__":
+    debug_efw_sdk_library_loading()

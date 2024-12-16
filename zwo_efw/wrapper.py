@@ -1,9 +1,8 @@
 # Core dependencies
-from ctypes import c_int, pointer
+from ctypes import c_int, c_ubyte, pointer
 
 # Project dependencies
-from zwo_efw.bindings import load_zwo_efw_library, EFW_ERROR_CODE, EFW_INFO
-
+from zwo_efw.bindings import EFW_ERROR_CODE, EFW_INFO, EFW_SN, load_zwo_efw_library
 
 ############################################################
 #### Exceptions ############################################
@@ -102,6 +101,13 @@ class EFWWrapper:
         result = self.__efw_library.EFWGetProperty(filter_wheel_id, information)
         _handle_function_result(result)
         return information.contents
+
+    def get_filter_wheel_serial_number(self, filter_wheel_id: int) -> EFW_INFO:
+        """Gets the serial number for a specific filter wheel"""
+        serial_number = pointer(EFW_SN((c_ubyte * 8)(0)))
+        result = self.__efw_library.EFWGetSerialNumber(filter_wheel_id, serial_number)
+        _handle_function_result(result)
+        return int.from_bytes(serial_number.contents.id)
 
     def get_position(self, filter_wheel_id: int) -> int:
         """Gets the current position of the filter wheel. This is a zero-based index of the

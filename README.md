@@ -53,27 +53,42 @@ There are no additional dependencies needed on Windows.
 
 ### Linux
 
-On Linux, the `libudev` library must be installed. For Ubuntu, this can be installed via:
+1. On Linux, the `libudev` library must be installed.
 
-```console
-sudo apt-get install libudev-dev -y
-```
+    * For Ubuntu, this can be installed via:
 
-For other distributions, you will need to find the package that needs to be installed to make the `libudev.so` library be available on the system `$PATH`.
+        ```console
+        sudo apt-get install libudev-dev -y
+        ```
+
+    * On a RaspberryPi, this can be installed via:
+
+        ```console
+        sudo apt-get install libudev-dev -y
+        ```
+
+    For other distributions, you will need to find the package that needs to be installed to make the `libudev.so` library be available in the `$PATH`.
+
+2. Run `sudo install efw.rules /lib/udev/rules.d`
+
+    * From the root of this repository, the `efw.rules` file is found at `zwo_efw/efw_sdk/EFW_SDK/EFW_linux_mac_SDK_V1.7/lib/efw.rules`. See the README at `zwo_efw/efw_sdk/EFW_SDK/EFW_linux_mac_SDK_V1.7/lib/README.txt`.
+
+    * If this step is not taken, then you will get the `EFW_ERROR_REMOVED` error code when trying to open the filter wheel during the `EFW.initialize` method.
 
 ### macOS
 
-Unknown at this time. File an issue if you find that there are missing dependencies that need to be loaded or if just to report that the library works fine on macOS.
+Unknown at this time. File an issue if you add support, which will mainly consist of making sure that the `libEFWFilter` is found and loaded properly.
 
 ## Supported operating systems and platforms
 
 In general, this library is intended to support every operating system and platform that the ZWO EFW SDK supports. However, there are limitations in the amount of platforms that can be easily tested since virtual machines and Docker containers are not enough since we need to be able to test the OS and platform against a real filter wheel. Also, some platforms, namely Linux, are incredibly difficult to test across the various permutations. So, the table below lists off the platforms that this library has been tested against. The table does not exhaustively list all platforms that are intended to be supported.
 
-| OS         | Platform      | Intention to support | Tested             |
-| ---------- | ------------- | -------------------- | ------------------ |
-| Windows 11 | 64-bit x86    | :heavy_check_mark:   | :heavy_check_mark: |
-| macOS      | Apple silicon | :heavy_check_mark:   | :x:                |
-| macOS      | x86           | :x:                  | -                  |
-| Ubuntu     | 64-bit x86    | :heavy_check_mark:   | :heavy_check_mark: |
+| OS          | Platform      | Intention to support | Tested             |
+| ----------- | ------------- | -------------------- | ------------------ |
+| Windows 11  | 64-bit x86    | :heavy_check_mark:   | :heavy_check_mark: |
+| macOS       | Apple silicon | :heavy_check_mark:   | :x:                |
+| macOS       | x86           | :x:                  | -                  |
+| Ubuntu      | 64-bit x86    | :heavy_check_mark:   | :heavy_check_mark: |
+| RaspberryPi | armv7         | :heavy_check_mark:   | :heavy_check_mark: |
 
-If you are encountering issues with a platform that is supported by the ZWO EFW SDK, then please file a GitHub issue. In that issue, please provide what the function `debug_efw_sdk_library_loading` in the `zwo_efw.debug` module prints out to the console. This will help more quickly narrow down the source of the issue.
+If you are encountering issues with a platform that is supported by the ZWO EFW SDK, then please file a GitHub issue. In that issue, please provide what the function `debug_efw_sdk_library_loading` in the `zwo_efw.debug` module prints out to the console. This will help more quickly narrow down the source of the issue. If you have the repository cloned locally, then the function can be ran by executing `poetry run python zwo_efw/scripts/debug.py`. With the information printed out by that script, it should be fairly straightforward to add in support for the target OS and platform.
