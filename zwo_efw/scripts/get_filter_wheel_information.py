@@ -9,7 +9,8 @@ efw = EFW()
 
 try:
     efw.initialize()
-    efw.set_position(0, 2)
+
+    efw.set_position(0, 1)
 
     while efw.is_moving(0):
         print(f"Position: {efw.get_position(0)}")

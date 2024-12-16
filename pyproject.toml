@@ -30,3 +30,6 @@ all = ["format", "lint"]
 format = "poetry run ruff format ./zwo_efw ./tests"
 check-formatting = "poetry run ruff format --check ./zwo_efw ./tests"
 lint = "poetry run ruff check ./zwo_efw ./tests"
+
+[tool.poetry.scripts]
+move = "zwo_efw.scripts.move_filter_wheel:move"
