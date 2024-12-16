@@ -9,13 +9,13 @@ efw = EFW()
 
 try:
     efw.initialize()
-    efw.set_position(0, 2)
+    efw.move(0, 2)
 
     while efw.is_moving(0):
-        print(f"Position: {efw.get_position(0)}")
+        print(f"Position: {efw.get_current_slot(0)}")
         time.sleep(1)
 
-    print(f"Position: {efw.get_position(0)}")
+    print(f"Position: {efw.get_current_slot(0)}")
 
 finally:
     efw.close()
