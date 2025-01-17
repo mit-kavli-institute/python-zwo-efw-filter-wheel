@@ -79,7 +79,7 @@ There are no additional dependencies needed on Windows.
 
 ### macOS
 
-Unknown at this time. File an issue if you add support, which will mainly consist of making sure that the `libEFWFilter` is found and loaded properly.
+There are no additional dependencies for macOS (but note that Apple silicon is not supported due to limitations of the ZWO EFW SDK).
 
 ## Supported operating systems and platforms
 
@@ -88,8 +88,8 @@ In general, this library is intended to support every operating system and platf
 | OS          | Platform      | Intention to support | Tested             |
 | ----------- | ------------- | -------------------- | ------------------ |
 | Windows 11  | 64-bit x86    | :heavy_check_mark:   | :heavy_check_mark: |
-| macOS       | Apple silicon | :heavy_check_mark:   | :x:                |
-| macOS       | x86           | :x:                  | -                  |
+| macOS       | Apple silicon | :x:                  | :x:                |
+| macOS       | x86           | :heavy_check_mark:   | :heavy_check_mark: |
 | Ubuntu      | 64-bit x86    | :heavy_check_mark:   | :heavy_check_mark: |
 | RaspberryPi | armv7         | :heavy_check_mark:   | :heavy_check_mark: |
 
