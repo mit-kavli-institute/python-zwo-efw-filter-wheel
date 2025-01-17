@@ -85,7 +85,7 @@ def _get_library_path() -> str:
                 / f"libEFWFilter.so.{SDK_VERSION}"
             )
 
-        case Platform.MACOS:
+        case Platform.MACOS, _:
             bitness_string = "x64" if bitness == Bitness.BITS_64 else "x86"
 
             return (
