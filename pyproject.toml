@@ -21,14 +21,26 @@ build-backend = "poetry.core.masonry.api"
 line-length = 100
 
 [tool.ruff.lint]
+extend-select = [
+    "I", # isort (sorting imports)
+]
 ignore = [
     "E712", # Prefer explicitness over implicitness
 ]
 
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+combine-as-imports = true
+lines-after-imports = 2
+
 [tool.poe.tasks]
 all = ["format", "lint"]
-format = "poetry run ruff format ./zwo_efw ./tests"
-check-formatting = "poetry run ruff format --check ./zwo_efw ./tests"
+format = ["format-code", "sort-imports"]
+check-formatting = ["check-code-formatting", "check-imports"]
+format-code = "poetry run ruff format ./zwo_efw ./tests"
+check-code-formatting = "poetry run ruff format --check ./zwo_efw ./tests"
+sort-imports = "poetry run ruff check --select I --fix"
+check-imports = "poetry run ruff check --select I"
 lint = "poetry run ruff check ./zwo_efw ./tests"
 
 [tool.poetry.scripts]

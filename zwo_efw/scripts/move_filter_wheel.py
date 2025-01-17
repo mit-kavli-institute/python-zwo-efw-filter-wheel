@@ -5,6 +5,7 @@ import time
 # Project dependencies
 from zwo_efw import EFW
 
+
 def move() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--id")
@@ -14,8 +15,6 @@ def move() -> None:
     slot = int(arguments.slot)
 
     efw = EFW()
-
-    
 
     try:
         efw.initialize()
@@ -30,6 +29,7 @@ def move() -> None:
 
     finally:
         efw.close()
+
 
 if __name__ == "__main__":
     run()

@@ -77,7 +77,7 @@ class EFW:
                 ID=int(info.ID),
                 Name=bytes(info.Name).decode(),
                 NumberOfSlots=int(info.slotNum),
-                SerialNumber=self.__efw_wrapper.get_filter_wheel_serial_number(info.ID)
+                SerialNumber=self.__efw_wrapper.get_filter_wheel_serial_number(info.ID),
             )
             for info in filter_wheel_information_structs
         ]
