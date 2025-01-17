@@ -4,6 +4,7 @@ from ctypes import c_int, c_ubyte, pointer
 # Project dependencies
 from zwo_efw.bindings import EFW_ERROR_CODE, EFW_INFO, EFW_SN, load_zwo_efw_library
 
+
 ############################################################
 #### Exceptions ############################################
 ############################################################

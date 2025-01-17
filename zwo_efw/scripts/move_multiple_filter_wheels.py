@@ -18,7 +18,7 @@ try:
 
         print(f"Moving filter wheel ID {id} four slot positions")
 
-        efw.set_position(id, (position + 4) % 5 )
+        efw.set_position(id, (position + 4) % 5)
 
         while efw.is_moving(id):
             time.sleep(1)

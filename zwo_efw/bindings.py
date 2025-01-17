@@ -1,17 +1,17 @@
 # Core dependencies
 from ctypes import (
-    c_int,
+    CDLL,
     POINTER,
+    RTLD_GLOBAL,
+    Structure,
+    c_bool,
     c_char,
     c_char_p,
-    c_bool,
+    c_int,
     c_ubyte,
     cdll,
-    CDLL,
-    Structure,
-    RTLD_GLOBAL,
 )
-from enum import IntEnum, auto, verify, UNIQUE
+from enum import UNIQUE, IntEnum, auto, verify
 from pathlib import Path
 import platform
 
@@ -19,8 +19,8 @@ import platform
 from zwo_efw.utilities import (
     Bitness,
     Platform,
-    get_platform_bitness,
     get_operating_system,
+    get_platform_bitness,
 )
 
 
@@ -37,7 +37,6 @@ SDK_VERSION = "1.7"
 ############################################################
 
 
-
 def _get_library_path() -> str:
     """Gets the path to the EFW filter wheel dynamic library. This function handles the differences
     in library paths between the various operating systems and their bitnesses.
@@ -48,7 +47,6 @@ def _get_library_path() -> str:
     machine = platform.machine()
     platform_os = get_operating_system()
     bitness = get_platform_bitness()
-    
 
     match (platform_os, machine):
         case Platform.WINDOWS, _:
@@ -85,7 +83,7 @@ def _get_library_path() -> str:
                 / f"libEFWFilter.so.{SDK_VERSION}"
             )
 
-        case Platform.MACOS:
+        case Platform.MACOS, _:
             bitness_string = "x64" if bitness == Bitness.BITS_64 else "x86"
 
             return (

@@ -4,6 +4,7 @@ import time
 # Project dependencies
 from zwo_efw import EFW
 
+
 efw = EFW()
 
 try:
