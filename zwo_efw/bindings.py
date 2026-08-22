@@ -83,6 +83,17 @@ def _get_library_path() -> str:
                 / f"libEFWFilter.so.{SDK_VERSION}"
             )
 
+        case Platform.LINUX, "aarch64":
+            # 64-bit ARM (e.g. raspberry pi running a 64-bit OS reports
+            # platform.machine() == "aarch64"); the SDK ships this as "armv8"
+            return (
+                base_sdk_path
+                / f"EFW_linux_mac_SDK_V{SDK_VERSION}"
+                / "lib"
+                / "armv8"
+                / f"libEFWFilter.so.{SDK_VERSION}"
+            )
+
         case Platform.MACOS, _:
             bitness_string = "x64" if bitness == Bitness.BITS_64 else "x86"
 
